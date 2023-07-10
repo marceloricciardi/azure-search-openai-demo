@@ -2,6 +2,36 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "resourceGroupName": {
+      "value": "rg-azure-search-openai-demo-dev"
+    },
+    "searchIndexName": {
+      "value": "gptkbindex"
+    },
+    "storageResourceGroupLocation": {
+      "value": "eastus"
+    },
+    "storageContainerName": {
+      "value": "content"
+    },
+    "openAiResourceGroupLocation": {
+      "value": "eastus"
+    },
+    "formRecognizerResourceGroupLocation": {
+      "value": "eastus"
+    },
+    "gptDeploymentCapacity": {
+      "value": 30
+    },
+    "gptModelName": {
+      "value": "chat"
+    },
+    "chatGptDeploymentCapacity": {
+      "value": 30
+    },
+    "chatGptModelName": {
+      "value": "chat"
+    },
     "environmentName": {
       "value": "${AZURE_ENV_NAME}"
     },
@@ -48,7 +78,10 @@
       "value": "${AZURE_OPENAI_CHATGPT_DEPLOYMENT=chat}"
     },
     "gptDeploymentName": {
-      "value": "${AZURE_OPENAI_GPT_DEPLOYMENT=davinci}"
+      "value": "${AZURE_OPENAI_GPT_DEPLOYMENT=chat}"
+    },
+    "appServicePlanName": {
+      "value": "${AZURE_APP_SERVICE_NAME=app-backend-sa6ggwlkxakec}"
     }
   }
 }

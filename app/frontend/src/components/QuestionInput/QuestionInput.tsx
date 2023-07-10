@@ -58,10 +58,10 @@ export const QuestionInput = ({ onSend, disabled, placeholder, clearOnSend }: Pr
             <div className={styles.questionInputButtonsContainer}>
                 <div
                     className={`${styles.questionInputSendButton} ${sendQuestionDisabled ? styles.questionInputSendButtonDisabled : ""}`}
-                    aria-label="Ask question button"
+                    aria-label="Botão de pergunta"
                     onClick={sendQuestion}
                 >
-                    <Send28Filled primaryFill="rgba(115, 118, 225, 1)" />
+                    <Send28Filled primaryFill="rgba(0, 0, 0, 1)" />
                 </div>
             </div>
         </Stack>

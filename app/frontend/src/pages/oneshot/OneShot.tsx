@@ -133,17 +133,17 @@ const OneShot = () => {
         <div className={styles.oneshotContainer}>
             <div className={styles.oneshotTopSection}>
                 <SettingsButton className={styles.settingsButton} onClick={() => setIsConfigPanelOpen(!isConfigPanelOpen)} />
-                <h1 className={styles.oneshotTitle}>Ask your data</h1>
+                <h1 className={styles.oneshotTitle}>Faça uma pergunta</h1>
                 <div className={styles.oneshotQuestionInput}>
                     <QuestionInput
-                        placeholder="Example: Does my plan cover annual eye exams?"
+                        placeholder="Exemplo: Posso obrigar um funcionário a fazer horas extras?"
                         disabled={isLoading}
                         onSend={question => makeApiRequest(question)}
                     />
                 </div>
             </div>
             <div className={styles.oneshotBottomSection}>
-                {isLoading && <Spinner label="Generating answer" />}
+                {isLoading && <Spinner label="Gerando resposta" />}
                 {!lastQuestionRef.current && <ExampleList onExampleClicked={onExampleClicked} />}
                 {!isLoading && answer && !error && (
                     <div className={styles.oneshotAnswerContainer}>
@@ -177,13 +177,13 @@ const OneShot = () => {
                 isOpen={isConfigPanelOpen}
                 isBlocking={false}
                 onDismiss={() => setIsConfigPanelOpen(false)}
-                closeButtonAriaLabel="Close"
+                closeButtonAriaLabel="Fechar"
                 onRenderFooterContent={() => <DefaultButton onClick={() => setIsConfigPanelOpen(false)}>Close</DefaultButton>}
                 isFooterAtBottom={true}
             >
                 <ChoiceGroup
                     className={styles.oneshotSettingsSeparator}
-                    label="Approach"
+                    label="Abordagem"
                     options={approaches}
                     defaultSelectedKey={approach}
                     onChange={onApproachChange}
@@ -193,7 +193,7 @@ const OneShot = () => {
                     <TextField
                         className={styles.oneshotSettingsSeparator}
                         defaultValue={promptTemplate}
-                        label="Override prompt template"
+                        label="Substituir modelo de prompt"
                         multiline
                         autoAdjustHeight
                         onChange={onPromptTemplateChange}
@@ -205,7 +205,7 @@ const OneShot = () => {
                         <TextField
                             className={styles.oneshotSettingsSeparator}
                             defaultValue={promptTemplatePrefix}
-                            label="Override prompt prefix template"
+                            label="Substituir modelo de prefixo de prompt"
                             multiline
                             autoAdjustHeight
                             onChange={onPromptTemplatePrefixChange}
@@ -213,7 +213,7 @@ const OneShot = () => {
                         <TextField
                             className={styles.oneshotSettingsSeparator}
                             defaultValue={promptTemplateSuffix}
-                            label="Override prompt suffix template"
+                            label="Substituir modelo de sufixo de prompt"
                             multiline
                             autoAdjustHeight
                             onChange={onPromptTemplateSuffixChange}
@@ -223,23 +223,23 @@ const OneShot = () => {
 
                 <SpinButton
                     className={styles.oneshotSettingsSeparator}
-                    label="Retrieve this many documents from search:"
+                    label="Recuperar esta quantidade de documentos da pesquisa:"
                     min={1}
                     max={50}
                     defaultValue={retrieveCount.toString()}
                     onChange={onRetrieveCountChange}
                 />
-                <TextField className={styles.oneshotSettingsSeparator} label="Exclude category" onChange={onExcludeCategoryChanged} />
+                <TextField className={styles.oneshotSettingsSeparator} label="Excluir categoria" onChange={onExcludeCategoryChanged} />
                 <Checkbox
                     className={styles.oneshotSettingsSeparator}
                     checked={useSemanticRanker}
-                    label="Use semantic ranker for retrieval"
+                    label="Use o classificador semântico para recuperação"
                     onChange={onUseSemanticRankerChange}
                 />
                 <Checkbox
                     className={styles.oneshotSettingsSeparator}
                     checked={useSemanticCaptions}
-                    label="Use query-contextual summaries instead of whole documents"
+                    label="Use resumos contextuais de consulta em vez de documentos inteiros"
                     onChange={onUseSemanticCaptionsChange}
                     disabled={!useSemanticRanker}
                 />

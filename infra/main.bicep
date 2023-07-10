@@ -47,6 +47,7 @@ param formRecognizerSkuName string = 'S0'
 param gptDeploymentName string // Set in main.parameters.json
 param gptDeploymentCapacity int = 30
 param gptModelName string = 'gpt-35-turbo'
+//param gptModelName string = 'text-embedding-ada-002'
 param chatGptDeploymentName string // Set in main.parameters.json
 param chatGptDeploymentCapacity int = 30
 param chatGptModelName string = 'gpt-35-turbo'
@@ -104,7 +105,7 @@ module backend 'core/host/appservice.bicep' = {
   params: {
     name: !empty(backendServiceName) ? backendServiceName : '${abbrs.webSitesAppService}backend-${resourceToken}'
     location: location
-    tags: union(tags, { 'azd-service-name': 'backend' })
+    // tags: union(tags, { 'azd-service-name': 'backend' })
     appServicePlanId: appServicePlan.outputs.id
     runtimeName: 'python'
     runtimeVersion: '3.10'
@@ -133,30 +134,30 @@ module openAi 'core/ai/cognitiveservices.bicep' = {
       name: openAiSkuName
     }
     deployments: [
-      {
-        name: gptDeploymentName
-        model: {
-          format: 'OpenAI'
-          name: gptModelName
-          version: '0301'
-        }
-        sku: {
-          name: 'Standard'
-          capacity: gptDeploymentCapacity
-        }
-      }
-      {
-        name: chatGptDeploymentName
-        model: {
-          format: 'OpenAI'
-          name: chatGptModelName
-          version: '0301'
-        }
-        sku: {
-          name: 'Standard'
-          capacity: chatGptDeploymentCapacity
-        }
-      }
+      // {
+      //   name: gptDeploymentName
+      //   model: {
+      //     format: 'OpenAI'
+      //     name: gptModelName
+      //     version: '0301'
+      //   }
+      //   sku: {
+      //     name: 'Standard'
+      //     capacity: gptDeploymentCapacity
+      //   }
+      // }
+      // {
+      //   name: chatGptDeploymentName
+      //   model: {
+      //     format: 'OpenAI'
+      //     name: chatGptModelName
+      //     version: '0301'
+      //   }
+      //   sku: {
+      //     name: 'Standard'
+      //     capacity: chatGptDeploymentCapacity
+      //   }
+      // }
     ]
   }
 }

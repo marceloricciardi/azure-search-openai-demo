@@ -14,10 +14,10 @@ class ChatReadRetrieveReadApproach(Approach):
     """
 
     prompt_prefix = """<|im_start|>system
-Assistant helps the company employees with their healthcare plan questions, and questions about the employee handbook. Be brief in your answers.
-Answer ONLY with the facts listed in the list of sources below. If there isn't enough information below, say you don't know. Do not generate answers that don't use the sources below. If asking a clarifying question to the user would help, ask the question.
-For tabular information return it as an html table. Do not return markdown format.
-Each source has a name followed by colon and the actual information, always include the source name for each fact you use in the response. Use square brackets to reference the source, e.g. [info1.txt]. Don't combine sources, list each source separately, e.g. [info1.txt][info2.pdf].
+O assistente auxilia os funcionários da empresa com dúvidas sobre as leis trabalhistas e penalidades cabíveis. Seja breve em suas respostas.
+Responda APENAS com os fatos listados na lista de fontes abaixo. Se não houver informações suficientes abaixo, diga que não sabe. Não gere respostas que não usem as fontes abaixo. Se fazer uma pergunta esclarecedora ao usuário ajudar, faça a pergunta.
+Para obter informações tabulares, retorne-as como uma tabela html. Não retorne o formato de remarcação.
+Cada fonte tem um nome seguido de dois pontos e as informaçõeses reais, sempre inclua o nome da fonte para cada fato que você usar na resposta. Use colchetes para referenciar a fonte, por exemplo [info1.txt]. Não combine fontes, liste cada fonte separadamente, por exemplo [info1.txt][info2.pdf].
 {follow_up_questions_prompt}
 {injected_prompt}
 Sources:
@@ -26,16 +26,16 @@ Sources:
 {chat_history}
 """
 
-    follow_up_questions_prompt_content = """Generate three very brief follow-up questions that the user would likely ask next about their healthcare plan and employee handbook. 
-    Use double angle brackets to reference the questions, e.g. <<Are there exclusions for prescriptions?>>.
-    Try not to repeat questions that have already been asked.
-    Only generate questions and do not generate any text before or after the questions, such as 'Next Questions'"""
+    follow_up_questions_prompt_content = """Gere três breves perguntas de acompanhamento que o usuário provavelmente faria a seguir sobre as leis trabalhistas (Consolidação das Leis do Trabalho - CLT) e manual do funcionário.
+     Use colchetes angulares duplos para fazer referência às perguntas, por exemplo <<Existem exclusões de penalidades?>>.
+     Tente não repetir perguntas que já foram feitas.
+     Gere apenas perguntas e não gere nenhum texto antes ou depois das perguntas, como 'Próximas perguntas'"""
 
-    query_prompt_template = """Below is a history of the conversation so far, and a new question asked by the user that needs to be answered by searching in a knowledge base about employee healthcare plans and the employee handbook.
-    Generate a search query based on the conversation and the new question. 
-    Do not include cited source filenames and document names e.g info.txt or doc.pdf in the search query terms.
-    Do not include any text inside [] or <<>> in the search query terms.
-    If the question is not in English, translate the question to English before generating the search query.
+    query_prompt_template = """Segue abaixo um histórico da conversa até o momento, e uma nova pergunta feita pelo usuário que precisa ser respondida através de uma busca em uma base de conhecimento sobre Consolidação das Leis do Trabalho (CLT) e o manual do empregado.
+     Gere uma consulta de pesquisa com base na conversa e na nova pergunta.
+     Não inclua nomes de arquivos de origem citados e nomes de documentos, por exemplo, info.txt ou doc.pdf nos termos de consulta de pesquisa.
+     Não inclua nenhum texto dentro de [] ou <<>> nos termos da consulta de pesquisa.
+     Pesquise no idioma da entrada original da pergunta, nunca tente traduzi-la para o inglês.
 
 Chat History:
 {chat_history}
@@ -99,16 +99,21 @@ Search query:
         else:
             prompt = prompt_override.format(sources=content, chat_history=self.get_chat_history_as_text(history), follow_up_questions_prompt=follow_up_questions_prompt)
 
+        messages = self.get_messages_from_prompt(prompt)
+
         # STEP 3: Generate a contextual and content specific answer using the search results and chat history
-        completion = openai.Completion.create(
-            engine=self.chatgpt_deployment, 
-            prompt=prompt, 
+        chatCompletion = openai.ChatCompletion.create(
+            deployment_id=self.chatgpt_deployment,
+            model="gpt-3.5-turbo",
+            messages=messages, 
             temperature=overrides.get("temperature") or 0.7, 
             max_tokens=1024, 
             n=1, 
             stop=["<|im_end|>", "<|im_start|>"])
+        
+        chatContent = chatCompletion.choices[0].message.content
 
-        return {"data_points": results, "answer": completion.choices[0].text, "thoughts": f"Searched for:<br>{q}<br><br>Prompt:<br>" + prompt.replace('\n', '<br>')}
+        return {"data_points": results, "answer": chatContent, "thoughts": f"Searched for:<br>{q}<br><br>Prompt:<br>" + prompt.replace('\n', '<br>')}
     
     def get_chat_history_as_text(self, history: Sequence[dict[str, str]], include_last_turn: bool=True, approx_max_tokens: int=1000) -> str:
         history_text = ""
@@ -117,3 +122,18 @@ Search query:
             if len(history_text) > approx_max_tokens*4:
                 break    
         return history_text
+    
+    # Generate messages needed for chat Completion api
+    from typing import List
+
+    def get_messages_from_prompt(self, prompt: str) -> List[dict[str, str]]:
+        messages = []
+        for line in prompt.splitlines():
+            if line.startswith("<|im_start|>"):
+                index = "<|im_start|>".__len__()
+                role = line[index:]
+            elif line.startswith("<|im_end|>"):
+                continue
+            else:
+                messages.append({"role": role, "content": line})
+        return messages
